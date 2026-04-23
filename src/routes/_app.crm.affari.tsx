@@ -255,9 +255,80 @@ function DealSheet({ deal, onClose }: { deal: Deal | null; onClose: () => void }
             <Tabs defaultValue="chiamate" className="px-6 py-4">
               <TabsList>
                 <TabsTrigger value="chiamate">Chiamate</TabsTrigger>
+                <TabsTrigger value="offerte">
+                  Offerte
+                  {quotes.length > 0 && (
+                    <span className="ml-1 text-[10px] text-muted-foreground">({quotes.length})</span>
+                  )}
+                </TabsTrigger>
                 <TabsTrigger value="info">Contatto</TabsTrigger>
                 <TabsTrigger value="storico">Storico</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="offerte" className="space-y-3 mt-4">
+                {quotes.length === 0 ? (
+                  <div className="text-center py-8 text-sm text-muted-foreground">
+                    <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                    Nessuna offerta collegata a questo affare
+                    <div className="mt-3">
+                      <Link to="/crm/offerte">
+                        <Button size="sm" variant="outline">
+                          <Plus className="h-3.5 w-3.5" /> Crea offerta
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        {quotes.length} offerta{quotes.length > 1 ? "e" : ""} · totale{" "}
+                        {formatEuro(quotesTotal)}
+                      </div>
+                      <Link to="/crm/offerte">
+                        <Button size="sm" variant="ghost">
+                          <Plus className="h-3.5 w-3.5" /> Nuova
+                        </Button>
+                      </Link>
+                    </div>
+                    {quotes.map((q) => (
+                      <Card key={q.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-mono text-sm font-semibold">{q.number}</span>
+                                <Badge
+                                  variant={QUOTE_STATUS_VARIANT[q.status]}
+                                  className="text-[10px]"
+                                >
+                                  {q.status}
+                                </Badge>
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5">
+                                <span>Emessa: {q.date}</span>
+                                <span>Valida fino: {q.validUntil}</span>
+                                <span>Owner: {q.owner}</span>
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <div className="text-base font-semibold">
+                                {formatEuro(q.total)}
+                              </div>
+                              <Link to="/crm/offerte">
+                                <Button size="sm" variant="ghost" className="mt-1 h-7 px-2">
+                                  <ExternalLink className="h-3 w-3" /> Apri
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </>
+                )}
+              </TabsContent>
 
               <TabsContent value="chiamate" className="space-y-4 mt-4">
                 <Card className="border-destructive/40 bg-destructive/5">
