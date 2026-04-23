@@ -9,38 +9,185 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppLavorazioneRapportiRouteImport } from './routes/_app.lavorazione.rapporti'
+import { Route as AppLavorazioneEvasiRouteImport } from './routes/_app.lavorazione.evasi'
+import { Route as AppLavorazioneCommesseRouteImport } from './routes/_app.lavorazione.commesse'
+import { Route as AppCrmOfferteRouteImport } from './routes/_app.crm.offerte'
+import { Route as AppCrmKpiRouteImport } from './routes/_app.crm.kpi'
+import { Route as AppCrmClientiRouteImport } from './routes/_app.crm.clienti'
+import { Route as AppCrmChiamateRouteImport } from './routes/_app.crm.chiamate'
+import { Route as AppCrmAffariRouteImport } from './routes/_app.crm.affari'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLavorazioneRapportiRoute = AppLavorazioneRapportiRouteImport.update({
+  id: '/lavorazione/rapporti',
+  path: '/lavorazione/rapporti',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLavorazioneEvasiRoute = AppLavorazioneEvasiRouteImport.update({
+  id: '/lavorazione/evasi',
+  path: '/lavorazione/evasi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLavorazioneCommesseRoute = AppLavorazioneCommesseRouteImport.update({
+  id: '/lavorazione/commesse',
+  path: '/lavorazione/commesse',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCrmOfferteRoute = AppCrmOfferteRouteImport.update({
+  id: '/crm/offerte',
+  path: '/crm/offerte',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCrmKpiRoute = AppCrmKpiRouteImport.update({
+  id: '/crm/kpi',
+  path: '/crm/kpi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCrmClientiRoute = AppCrmClientiRouteImport.update({
+  id: '/crm/clienti',
+  path: '/crm/clienti',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCrmChiamateRoute = AppCrmChiamateRouteImport.update({
+  id: '/crm/chiamate',
+  path: '/crm/chiamate',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCrmAffariRoute = AppCrmAffariRouteImport.update({
+  id: '/crm/affari',
+  path: '/crm/affari',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/crm/affari': typeof AppCrmAffariRoute
+  '/crm/chiamate': typeof AppCrmChiamateRoute
+  '/crm/clienti': typeof AppCrmClientiRoute
+  '/crm/kpi': typeof AppCrmKpiRoute
+  '/crm/offerte': typeof AppCrmOfferteRoute
+  '/lavorazione/commesse': typeof AppLavorazioneCommesseRoute
+  '/lavorazione/evasi': typeof AppLavorazioneEvasiRoute
+  '/lavorazione/rapporti': typeof AppLavorazioneRapportiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/crm/affari': typeof AppCrmAffariRoute
+  '/crm/chiamate': typeof AppCrmChiamateRoute
+  '/crm/clienti': typeof AppCrmClientiRoute
+  '/crm/kpi': typeof AppCrmKpiRoute
+  '/crm/offerte': typeof AppCrmOfferteRoute
+  '/lavorazione/commesse': typeof AppLavorazioneCommesseRoute
+  '/lavorazione/evasi': typeof AppLavorazioneEvasiRoute
+  '/lavorazione/rapporti': typeof AppLavorazioneRapportiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/crm/affari': typeof AppCrmAffariRoute
+  '/_app/crm/chiamate': typeof AppCrmChiamateRoute
+  '/_app/crm/clienti': typeof AppCrmClientiRoute
+  '/_app/crm/kpi': typeof AppCrmKpiRoute
+  '/_app/crm/offerte': typeof AppCrmOfferteRoute
+  '/_app/lavorazione/commesse': typeof AppLavorazioneCommesseRoute
+  '/_app/lavorazione/evasi': typeof AppLavorazioneEvasiRoute
+  '/_app/lavorazione/rapporti': typeof AppLavorazioneRapportiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/crm/affari'
+    | '/crm/chiamate'
+    | '/crm/clienti'
+    | '/crm/kpi'
+    | '/crm/offerte'
+    | '/lavorazione/commesse'
+    | '/lavorazione/evasi'
+    | '/lavorazione/rapporti'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/crm/affari'
+    | '/crm/chiamate'
+    | '/crm/clienti'
+    | '/crm/kpi'
+    | '/crm/offerte'
+    | '/lavorazione/commesse'
+    | '/lavorazione/evasi'
+    | '/lavorazione/rapporti'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/_app/dashboard'
+    | '/_app/crm/affari'
+    | '/_app/crm/chiamate'
+    | '/_app/crm/clienti'
+    | '/_app/crm/kpi'
+    | '/_app/crm/offerte'
+    | '/_app/lavorazione/commesse'
+    | '/_app/lavorazione/evasi'
+    | '/_app/lavorazione/rapporti'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +195,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/lavorazione/rapporti': {
+      id: '/_app/lavorazione/rapporti'
+      path: '/lavorazione/rapporti'
+      fullPath: '/lavorazione/rapporti'
+      preLoaderRoute: typeof AppLavorazioneRapportiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/lavorazione/evasi': {
+      id: '/_app/lavorazione/evasi'
+      path: '/lavorazione/evasi'
+      fullPath: '/lavorazione/evasi'
+      preLoaderRoute: typeof AppLavorazioneEvasiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/lavorazione/commesse': {
+      id: '/_app/lavorazione/commesse'
+      path: '/lavorazione/commesse'
+      fullPath: '/lavorazione/commesse'
+      preLoaderRoute: typeof AppLavorazioneCommesseRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/crm/offerte': {
+      id: '/_app/crm/offerte'
+      path: '/crm/offerte'
+      fullPath: '/crm/offerte'
+      preLoaderRoute: typeof AppCrmOfferteRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/crm/kpi': {
+      id: '/_app/crm/kpi'
+      path: '/crm/kpi'
+      fullPath: '/crm/kpi'
+      preLoaderRoute: typeof AppCrmKpiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/crm/clienti': {
+      id: '/_app/crm/clienti'
+      path: '/crm/clienti'
+      fullPath: '/crm/clienti'
+      preLoaderRoute: typeof AppCrmClientiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/crm/chiamate': {
+      id: '/_app/crm/chiamate'
+      path: '/crm/chiamate'
+      fullPath: '/crm/chiamate'
+      preLoaderRoute: typeof AppCrmChiamateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/crm/affari': {
+      id: '/_app/crm/affari'
+      path: '/crm/affari'
+      fullPath: '/crm/affari'
+      preLoaderRoute: typeof AppCrmAffariRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppCrmAffariRoute: typeof AppCrmAffariRoute
+  AppCrmChiamateRoute: typeof AppCrmChiamateRoute
+  AppCrmClientiRoute: typeof AppCrmClientiRoute
+  AppCrmKpiRoute: typeof AppCrmKpiRoute
+  AppCrmOfferteRoute: typeof AppCrmOfferteRoute
+  AppLavorazioneCommesseRoute: typeof AppLavorazioneCommesseRoute
+  AppLavorazioneEvasiRoute: typeof AppLavorazioneEvasiRoute
+  AppLavorazioneRapportiRoute: typeof AppLavorazioneRapportiRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppCrmAffariRoute: AppCrmAffariRoute,
+  AppCrmChiamateRoute: AppCrmChiamateRoute,
+  AppCrmClientiRoute: AppCrmClientiRoute,
+  AppCrmKpiRoute: AppCrmKpiRoute,
+  AppCrmOfferteRoute: AppCrmOfferteRoute,
+  AppLavorazioneCommesseRoute: AppLavorazioneCommesseRoute,
+  AppLavorazioneEvasiRoute: AppLavorazioneEvasiRoute,
+  AppLavorazioneRapportiRoute: AppLavorazioneRapportiRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
