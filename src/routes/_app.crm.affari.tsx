@@ -19,6 +19,7 @@ import {
   DEALS,
   Deal,
   DealStage,
+  QUOTES,
   STAGE_LABELS,
   formatEuro,
 } from "@/lib/mock-data";
@@ -34,7 +35,19 @@ import {
   Clock,
   PlayCircle,
   CheckCircle2,
+  FileText,
+  ExternalLink,
 } from "lucide-react";
+
+const QUOTE_STATUS_VARIANT: Record<
+  "bozza" | "inviato" | "accettato" | "rifiutato",
+  "secondary" | "outline" | "default" | "destructive"
+> = {
+  bozza: "secondary",
+  inviato: "outline",
+  accettato: "default",
+  rifiutato: "destructive",
+};
 
 export const Route = createFileRoute("/_app/crm/affari")({
   component: AffariPage,
@@ -141,30 +154,47 @@ function AffariPage() {
                 />
               </div>
               <div className="space-y-2">
-                {col.items.map((d) => (
-                  <button
-                    key={d.id}
-                    onClick={() => setActive(d)}
-                    className="w-full text-left rounded-md bg-card border p-3 hover:border-primary/50 hover:shadow-sm transition"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="font-medium text-sm leading-tight">{d.title}</div>
-                      {d.aiPriority === "alta" && (
-                        <Sparkles className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                {col.items.map((d) => {
+                  const dealQuotes = QUOTES.filter((q) => q.dealId === d.id);
+                  return (
+                    <button
+                      key={d.id}
+                      onClick={() => setActive(d)}
+                      className="w-full text-left rounded-md bg-card border p-3 hover:border-primary/50 hover:shadow-sm transition"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="font-medium text-sm leading-tight">{d.title}</div>
+                        {d.aiPriority === "alta" && (
+                          <Sparkles className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">{d.customer}</div>
+                      {dealQuotes.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {dealQuotes.map((q) => (
+                            <Badge
+                              key={q.id}
+                              variant={QUOTE_STATUS_VARIANT[q.status]}
+                              className="text-[10px] gap-1 font-normal"
+                            >
+                              <FileText className="h-2.5 w-2.5" />
+                              {q.number.replace("OFF-2025-", "#")} · {q.status}
+                            </Badge>
+                          ))}
+                        </div>
                       )}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">{d.customer}</div>
-                    <div className="flex items-center justify-between mt-2.5">
-                      <span className="text-sm font-semibold">{formatEuro(d.value)}</span>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-muted-foreground">{d.probability}%</span>
-                        <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-semibold">
-                          {d.ownerInitials}
+                      <div className="flex items-center justify-between mt-2.5">
+                        <span className="text-sm font-semibold">{formatEuro(d.value)}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-muted-foreground">{d.probability}%</span>
+                          <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-semibold">
+                            {d.ownerInitials}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
                 {col.items.length === 0 && (
                   <div className="text-xs text-muted-foreground text-center py-6">Nessun affare</div>
                 )}
@@ -181,7 +211,9 @@ function AffariPage() {
 
 function DealSheet({ deal, onClose }: { deal: Deal | null; onClose: () => void }) {
   const calls = deal ? CALLS.filter((c) => c.dealId === deal.id) : [];
+  const quotes = deal ? QUOTES.filter((q) => q.dealId === deal.id) : [];
   const liveCall = calls[0];
+  const quotesTotal = quotes.reduce((s, q) => s + q.total, 0);
 
   return (
     <Sheet open={!!deal} onOpenChange={(o) => !o && onClose()}>
@@ -199,10 +231,11 @@ function DealSheet({ deal, onClose }: { deal: Deal | null; onClose: () => void }
               </SheetDescription>
             </SheetHeader>
 
-            <div className="px-6 py-5 grid grid-cols-2 sm:grid-cols-4 gap-3 border-b">
+            <div className="px-6 py-5 grid grid-cols-2 sm:grid-cols-5 gap-3 border-b">
               <KV label="Valore" value={formatEuro(deal.value)} />
               <KV label="Probabilità" value={`${deal.probability}%`} />
               <KV label="Giorni in fase" value={String(deal.daysInStage)} />
+              <KV label="Offerte" value={`${quotes.length} · ${formatEuro(quotesTotal)}`} />
               <KV label="Ultima attività" value={deal.lastActivity} />
             </div>
 
@@ -222,9 +255,80 @@ function DealSheet({ deal, onClose }: { deal: Deal | null; onClose: () => void }
             <Tabs defaultValue="chiamate" className="px-6 py-4">
               <TabsList>
                 <TabsTrigger value="chiamate">Chiamate</TabsTrigger>
+                <TabsTrigger value="offerte">
+                  Offerte
+                  {quotes.length > 0 && (
+                    <span className="ml-1 text-[10px] text-muted-foreground">({quotes.length})</span>
+                  )}
+                </TabsTrigger>
                 <TabsTrigger value="info">Contatto</TabsTrigger>
                 <TabsTrigger value="storico">Storico</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="offerte" className="space-y-3 mt-4">
+                {quotes.length === 0 ? (
+                  <div className="text-center py-8 text-sm text-muted-foreground">
+                    <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                    Nessuna offerta collegata a questo affare
+                    <div className="mt-3">
+                      <Link to="/crm/offerte">
+                        <Button size="sm" variant="outline">
+                          <Plus className="h-3.5 w-3.5" /> Crea offerta
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        {quotes.length} offerta{quotes.length > 1 ? "e" : ""} · totale{" "}
+                        {formatEuro(quotesTotal)}
+                      </div>
+                      <Link to="/crm/offerte">
+                        <Button size="sm" variant="ghost">
+                          <Plus className="h-3.5 w-3.5" /> Nuova
+                        </Button>
+                      </Link>
+                    </div>
+                    {quotes.map((q) => (
+                      <Card key={q.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-mono text-sm font-semibold">{q.number}</span>
+                                <Badge
+                                  variant={QUOTE_STATUS_VARIANT[q.status]}
+                                  className="text-[10px]"
+                                >
+                                  {q.status}
+                                </Badge>
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5">
+                                <span>Emessa: {q.date}</span>
+                                <span>Valida fino: {q.validUntil}</span>
+                                <span>Owner: {q.owner}</span>
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <div className="text-base font-semibold">
+                                {formatEuro(q.total)}
+                              </div>
+                              <Link to="/crm/offerte">
+                                <Button size="sm" variant="ghost" className="mt-1 h-7 px-2">
+                                  <ExternalLink className="h-3 w-3" /> Apri
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </>
+                )}
+              </TabsContent>
 
               <TabsContent value="chiamate" className="space-y-4 mt-4">
                 <Card className="border-destructive/40 bg-destructive/5">
