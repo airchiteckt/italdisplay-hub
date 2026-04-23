@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppApp40RouteImport } from './routes/_app.app40'
 import { Route as AppLavorazioneRapportiRouteImport } from './routes/_app.lavorazione.rapporti'
 import { Route as AppLavorazioneEvasiRouteImport } from './routes/_app.lavorazione.evasi'
 import { Route as AppLavorazioneCommesseRouteImport } from './routes/_app.lavorazione.commesse'
@@ -39,6 +40,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApp40Route = AppApp40RouteImport.update({
+  id: '/app40',
+  path: '/app40',
   getParentRoute: () => AppRoute,
 } as any)
 const AppLavorazioneRapportiRoute = AppLavorazioneRapportiRouteImport.update({
@@ -85,6 +91,7 @@ const AppCrmAffariRoute = AppCrmAffariRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/app40': typeof AppApp40Route
   '/dashboard': typeof AppDashboardRoute
   '/crm/affari': typeof AppCrmAffariRoute
   '/crm/chiamate': typeof AppCrmChiamateRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/app40': typeof AppApp40Route
   '/dashboard': typeof AppDashboardRoute
   '/crm/affari': typeof AppCrmAffariRoute
   '/crm/chiamate': typeof AppCrmChiamateRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/_app/app40': typeof AppApp40Route
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/crm/affari': typeof AppCrmAffariRoute
   '/_app/crm/chiamate': typeof AppCrmChiamateRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/app40'
     | '/dashboard'
     | '/crm/affari'
     | '/crm/chiamate'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/app40'
     | '/dashboard'
     | '/crm/affari'
     | '/crm/chiamate'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/login'
+    | '/_app/app40'
     | '/_app/dashboard'
     | '/_app/crm/affari'
     | '/_app/crm/chiamate'
@@ -200,6 +212,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/app40': {
+      id: '/_app/app40'
+      path: '/app40'
+      fullPath: '/app40'
+      preLoaderRoute: typeof AppApp40RouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/lavorazione/rapporti': {
@@ -262,6 +281,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppApp40Route: typeof AppApp40Route
   AppDashboardRoute: typeof AppDashboardRoute
   AppCrmAffariRoute: typeof AppCrmAffariRoute
   AppCrmChiamateRoute: typeof AppCrmChiamateRoute
@@ -274,6 +294,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppApp40Route: AppApp40Route,
   AppDashboardRoute: AppDashboardRoute,
   AppCrmAffariRoute: AppCrmAffariRoute,
   AppCrmChiamateRoute: AppCrmChiamateRoute,
@@ -295,3 +316,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

@@ -11,6 +11,7 @@ import {
   LogOut,
   Phone,
   Receipt,
+  Smartphone,
   Wrench,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
@@ -40,6 +41,10 @@ const NAV = [
       { to: "/lavorazione/rapporti", label: "Rapporti intervento", icon: Wrench },
       { to: "/lavorazione/evasi", label: "Lavori evasi", icon: Receipt },
     ],
+  },
+  {
+    label: "Operatori",
+    items: [{ to: "/app40", label: "App 4.0", icon: Smartphone }],
   },
 ] as const;
 
