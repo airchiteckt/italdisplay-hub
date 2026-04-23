@@ -3,6 +3,7 @@ import {
   BarChart3,
   Briefcase,
   Building2,
+  Calculator,
   ClipboardList,
   FileText,
   Headphones,
@@ -45,6 +46,10 @@ const NAV = [
   {
     label: "Operatori",
     items: [{ to: "/app40", label: "App 4.0", icon: Smartphone }],
+  },
+  {
+    label: "Vendite",
+    items: [{ to: "/quotazione", label: "Quotazione ERP", icon: Calculator }],
   },
 ] as const;
 
