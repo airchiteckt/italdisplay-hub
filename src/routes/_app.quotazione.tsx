@@ -182,13 +182,188 @@ function QuotazionePage() {
   const acconto = total * 0.5;
   const saldo = total * 0.5;
 
+  const handleExportPdf = async () => {
+    if (selected.size === 0) {
+      toast.error("Seleziona almeno un modulo per generare il preventivo");
+      return;
+    }
+
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginX = 18;
+    let y = 20;
+
+    const fmt = (n: number) =>
+      `EUR ${new Intl.NumberFormat("it-IT", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n)}`;
+
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    // Header band
+    doc.setFillColor(37, 99, 235);
+    doc.rect(0, 0, pageWidth, 32, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("Preventivo ERP", marginX, 16);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(
+      `Italdisplay  -  ${new Date().toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })}`,
+      marginX,
+      24,
+    );
+    y = 44;
+
+    doc.setTextColor(20, 20, 20);
+
+    // Selected modules detail
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.text("Moduli selezionati", marginX, y);
+    y += 7;
+
+    const selectedModules = MODULES.filter((m) => selected.has(m.id));
+    selectedModules.forEach((m) => {
+      ensureSpace(40);
+      doc.setFillColor(245, 247, 250);
+      doc.rect(marginX, y - 4, pageWidth - marginX * 2, 8, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text(m.title, marginX + 2, y + 1);
+      doc.text(fmt(m.price), pageWidth - marginX - 2, y + 1, { align: "right" });
+      y += 10;
+
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 100, 100);
+      doc.text(m.tagline, marginX + 2, y);
+      y += 5;
+      doc.setTextColor(20, 20, 20);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("Pagine incluse:", marginX + 2, y);
+      y += 4;
+      doc.setFont("helvetica", "normal");
+      m.pages.forEach((p) => {
+        ensureSpace(5);
+        doc.text(`- ${p.name}: ${p.description}`, marginX + 4, y);
+        y += 4;
+      });
+
+      y += 1;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("Funzionalita':", marginX + 2, y);
+      y += 4;
+      doc.setFont("helvetica", "normal");
+      m.features.forEach((f) => {
+        ensureSpace(5);
+        const lines = doc.splitTextToSize(`- ${f}`, pageWidth - marginX * 2 - 6);
+        doc.text(lines, marginX + 4, y);
+        y += lines.length * 4;
+      });
+      y += 4;
+    });
+
+    // Totals box
+    ensureSpace(50);
+    doc.setDrawColor(37, 99, 235);
+    doc.setLineWidth(0.5);
+    doc.rect(marginX, y, pageWidth - marginX * 2, 42);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Totale sviluppo (una tantum)", marginX + 4, y + 8);
+    doc.setFontSize(16);
+    doc.text(fmt(total), pageWidth - marginX - 4, y + 9, { align: "right" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`50% acconto all'ordine`, marginX + 4, y + 18);
+    doc.text(fmt(acconto), pageWidth - marginX - 4, y + 18, { align: "right" });
+    doc.text(`50% alla consegna`, marginX + 4, y + 25);
+    doc.text(fmt(saldo), pageWidth - marginX - 4, y + 25, { align: "right" });
+
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(80, 80, 80);
+    doc.text("Consegna entro 30 giorni dall'ordine", marginX + 4, y + 35);
+    doc.setTextColor(20, 20, 20);
+    y += 50;
+
+    // Recurring costs
+    ensureSpace(40);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.text("Costi ricorrenti mensili", marginX, y);
+    y += 7;
+
+    RECURRING_COSTS.forEach((c) => {
+      ensureSpace(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text(c.title, marginX + 2, y);
+      doc.text(`${fmt(c.price)} / mese`, pageWidth - marginX - 2, y, { align: "right" });
+      y += 4;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 100, 100);
+      const lines = doc.splitTextToSize(c.description, pageWidth - marginX * 2 - 4);
+      doc.text(lines, marginX + 2, y);
+      y += lines.length * 4 + 2;
+      doc.setTextColor(20, 20, 20);
+    });
+
+    ensureSpace(10);
+    doc.setDrawColor(200, 200, 200);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 5;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Totale mensile", marginX, y);
+    doc.text(`${fmt(monthlyTotal)} / mese`, pageWidth - marginX, y, { align: "right" });
+    y += 10;
+
+    // Footer note
+    ensureSpace(20);
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text(
+      "Tutti i prezzi indicati sono IVA esclusa. Include sviluppo, deploy, formazione team e 30gg di supporto post go-live.",
+      marginX,
+      y,
+      { maxWidth: pageWidth - marginX * 2 },
+    );
+
+    // Page numbers
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - marginX, pageHeight - 8, { align: "right" });
+    }
+
+    doc.save(`preventivo-erp-${new Date().toISOString().slice(0, 10)}.pdf`);
+    toast.success("Preventivo PDF scaricato");
+  };
+
   return (
     <div>
       <PageHeader
         title="Quotazione ERP"
         subtitle="Componi il tuo ERP modulo per modulo. Il prezzo si aggiorna in tempo reale."
         actions={
-          <Button onClick={() => toast.success("Preventivo PDF generato")}>
+          <Button onClick={handleExportPdf} disabled={selected.size === 0}>
             <FileText className="h-4 w-4" /> Esporta preventivo
           </Button>
         }
