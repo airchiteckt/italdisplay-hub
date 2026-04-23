@@ -231,10 +231,11 @@ function DealSheet({ deal, onClose }: { deal: Deal | null; onClose: () => void }
               </SheetDescription>
             </SheetHeader>
 
-            <div className="px-6 py-5 grid grid-cols-2 sm:grid-cols-4 gap-3 border-b">
+            <div className="px-6 py-5 grid grid-cols-2 sm:grid-cols-5 gap-3 border-b">
               <KV label="Valore" value={formatEuro(deal.value)} />
               <KV label="Probabilità" value={`${deal.probability}%`} />
               <KV label="Giorni in fase" value={String(deal.daysInStage)} />
+              <KV label="Offerte" value={`${quotes.length} · ${formatEuro(quotesTotal)}`} />
               <KV label="Ultima attività" value={deal.lastActivity} />
             </div>
 
