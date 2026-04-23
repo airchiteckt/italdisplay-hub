@@ -154,30 +154,47 @@ function AffariPage() {
                 />
               </div>
               <div className="space-y-2">
-                {col.items.map((d) => (
-                  <button
-                    key={d.id}
-                    onClick={() => setActive(d)}
-                    className="w-full text-left rounded-md bg-card border p-3 hover:border-primary/50 hover:shadow-sm transition"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="font-medium text-sm leading-tight">{d.title}</div>
-                      {d.aiPriority === "alta" && (
-                        <Sparkles className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                {col.items.map((d) => {
+                  const dealQuotes = QUOTES.filter((q) => q.dealId === d.id);
+                  return (
+                    <button
+                      key={d.id}
+                      onClick={() => setActive(d)}
+                      className="w-full text-left rounded-md bg-card border p-3 hover:border-primary/50 hover:shadow-sm transition"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="font-medium text-sm leading-tight">{d.title}</div>
+                        {d.aiPriority === "alta" && (
+                          <Sparkles className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">{d.customer}</div>
+                      {dealQuotes.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {dealQuotes.map((q) => (
+                            <Badge
+                              key={q.id}
+                              variant={QUOTE_STATUS_VARIANT[q.status]}
+                              className="text-[10px] gap-1 font-normal"
+                            >
+                              <FileText className="h-2.5 w-2.5" />
+                              {q.number.replace("OFF-2025-", "#")} · {q.status}
+                            </Badge>
+                          ))}
+                        </div>
                       )}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">{d.customer}</div>
-                    <div className="flex items-center justify-between mt-2.5">
-                      <span className="text-sm font-semibold">{formatEuro(d.value)}</span>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-muted-foreground">{d.probability}%</span>
-                        <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-semibold">
-                          {d.ownerInitials}
+                      <div className="flex items-center justify-between mt-2.5">
+                        <span className="text-sm font-semibold">{formatEuro(d.value)}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-muted-foreground">{d.probability}%</span>
+                          <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-semibold">
+                            {d.ownerInitials}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
                 {col.items.length === 0 && (
                   <div className="text-xs text-muted-foreground text-center py-6">Nessun affare</div>
                 )}
