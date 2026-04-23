@@ -211,7 +211,9 @@ function AffariPage() {
 
 function DealSheet({ deal, onClose }: { deal: Deal | null; onClose: () => void }) {
   const calls = deal ? CALLS.filter((c) => c.dealId === deal.id) : [];
+  const quotes = deal ? QUOTES.filter((q) => q.dealId === deal.id) : [];
   const liveCall = calls[0];
+  const quotesTotal = quotes.reduce((s, q) => s + q.total, 0);
 
   return (
     <Sheet open={!!deal} onOpenChange={(o) => !o && onClose()}>
