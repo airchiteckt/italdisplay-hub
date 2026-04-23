@@ -19,6 +19,7 @@ import {
   DEALS,
   Deal,
   DealStage,
+  QUOTES,
   STAGE_LABELS,
   formatEuro,
 } from "@/lib/mock-data";
@@ -34,7 +35,19 @@ import {
   Clock,
   PlayCircle,
   CheckCircle2,
+  FileText,
+  ExternalLink,
 } from "lucide-react";
+
+const QUOTE_STATUS_VARIANT: Record<
+  "bozza" | "inviato" | "accettato" | "rifiutato",
+  "secondary" | "outline" | "default" | "destructive"
+> = {
+  bozza: "secondary",
+  inviato: "outline",
+  accettato: "default",
+  rifiutato: "destructive",
+};
 
 export const Route = createFileRoute("/_app/crm/affari")({
   component: AffariPage,
