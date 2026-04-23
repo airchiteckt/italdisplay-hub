@@ -121,6 +121,31 @@ const MODULE_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
   app40: Smartphone,
 };
 
+interface RecurringCost {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const RECURRING_COSTS: RecurringCost[] = [
+  {
+    id: "cloud",
+    title: "Server Cloud",
+    description: "Infrastruttura hosting, backup giornalieri e monitoraggio 24/7",
+    price: 55,
+    icon: Cloud,
+  },
+  {
+    id: "centralino",
+    title: "Centralino VoIP",
+    description: "Numero fisso cloud dedicato ai commerciali, chiamate illimitate",
+    price: 45,
+    icon: PhoneCall,
+  },
+];
+
 function QuotazionePage() {
   const [selected, setSelected] = useState<Set<string>>(new Set(["crm"]));
 
@@ -148,6 +173,14 @@ function QuotazionePage() {
       MODULES.filter((m) => selected.has(m.id)).reduce((s, m) => s + m.pages.length, 0),
     [selected],
   );
+
+  const monthlyTotal = useMemo(
+    () => RECURRING_COSTS.reduce((s, c) => s + c.price, 0),
+    [],
+  );
+
+  const acconto = total * 0.5;
+  const saldo = total * 0.5;
 
   return (
     <div>
