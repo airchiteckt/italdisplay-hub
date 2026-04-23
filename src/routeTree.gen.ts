@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppQuotazioneRouteImport } from './routes/_app.quotazione'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppApp40RouteImport } from './routes/_app.app40'
 import { Route as AppLavorazioneRapportiRouteImport } from './routes/_app.lavorazione.rapporti'
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppQuotazioneRoute = AppQuotazioneRouteImport.update({
+  id: '/quotazione',
+  path: '/quotazione',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/app40': typeof AppApp40Route
   '/dashboard': typeof AppDashboardRoute
+  '/quotazione': typeof AppQuotazioneRoute
   '/crm/affari': typeof AppCrmAffariRoute
   '/crm/chiamate': typeof AppCrmChiamateRoute
   '/crm/clienti': typeof AppCrmClientiRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/app40': typeof AppApp40Route
   '/dashboard': typeof AppDashboardRoute
+  '/quotazione': typeof AppQuotazioneRoute
   '/crm/affari': typeof AppCrmAffariRoute
   '/crm/chiamate': typeof AppCrmChiamateRoute
   '/crm/clienti': typeof AppCrmClientiRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/app40': typeof AppApp40Route
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/quotazione': typeof AppQuotazioneRoute
   '/_app/crm/affari': typeof AppCrmAffariRoute
   '/_app/crm/chiamate': typeof AppCrmChiamateRoute
   '/_app/crm/clienti': typeof AppCrmClientiRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/app40'
     | '/dashboard'
+    | '/quotazione'
     | '/crm/affari'
     | '/crm/chiamate'
     | '/crm/clienti'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/app40'
     | '/dashboard'
+    | '/quotazione'
     | '/crm/affari'
     | '/crm/chiamate'
     | '/crm/clienti'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/app40'
     | '/_app/dashboard'
+    | '/_app/quotazione'
     | '/_app/crm/affari'
     | '/_app/crm/chiamate'
     | '/_app/crm/clienti'
@@ -206,6 +218,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/quotazione': {
+      id: '/_app/quotazione'
+      path: '/quotazione'
+      fullPath: '/quotazione'
+      preLoaderRoute: typeof AppQuotazioneRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/dashboard': {
       id: '/_app/dashboard'
@@ -283,6 +302,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppApp40Route: typeof AppApp40Route
   AppDashboardRoute: typeof AppDashboardRoute
+  AppQuotazioneRoute: typeof AppQuotazioneRoute
   AppCrmAffariRoute: typeof AppCrmAffariRoute
   AppCrmChiamateRoute: typeof AppCrmChiamateRoute
   AppCrmClientiRoute: typeof AppCrmClientiRoute
@@ -296,6 +316,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppApp40Route: AppApp40Route,
   AppDashboardRoute: AppDashboardRoute,
+  AppQuotazioneRoute: AppQuotazioneRoute,
   AppCrmAffariRoute: AppCrmAffariRoute,
   AppCrmChiamateRoute: AppCrmChiamateRoute,
   AppCrmClientiRoute: AppCrmClientiRoute,
