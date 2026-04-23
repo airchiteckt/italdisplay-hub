@@ -297,7 +297,7 @@ function QuotazionePage() {
               </div>
               <div className="text-4xl font-bold tabular-nums">{formatEuro(total)}</div>
               <div className="text-xs opacity-80 mt-1">
-                {selected.size} {selected.size === 1 ? "modulo" : "moduli"} · {totalPages} pagine
+                {selected.size} {selected.size === 1 ? "modulo" : "moduli"} · {totalPages} pagine · una tantum
               </div>
             </div>
             <CardContent className="p-5 space-y-4">
@@ -329,8 +329,65 @@ function QuotazionePage() {
               <Separator />
 
               <div className="flex items-center justify-between font-semibold">
-                <span>Totale</span>
+                <span>Totale sviluppo</span>
                 <span className="text-xl tabular-nums">{formatEuro(total)}</span>
+              </div>
+
+              {/* Payment terms */}
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-2.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground uppercase tracking-wider">
+                  <CreditCard className="h-3.5 w-3.5 text-primary" /> Condizioni di pagamento
+                </div>
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">50% acconto all'ordine</span>
+                    <span className="font-semibold tabular-nums">{formatEuro(acconto)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">50% alla consegna</span>
+                    <span className="font-semibold tabular-nums">{formatEuro(saldo)}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 pt-1.5 border-t border-primary/15 text-xs text-muted-foreground">
+                  <CalendarClock className="h-3.5 w-3.5 text-primary" />
+                  <span>Consegna entro <strong className="text-foreground">30 giorni</strong> dall'ordine</span>
+                </div>
+              </div>
+
+              {/* Recurring monthly costs */}
+              <div className="rounded-lg border bg-card p-3 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider">
+                    <Repeat className="h-3.5 w-3.5 text-info" /> Costi ricorrenti
+                  </div>
+                  <Badge variant="secondary" className="text-[10px]">mensili</Badge>
+                </div>
+                <div className="space-y-2">
+                  {RECURRING_COSTS.map((c) => {
+                    const CIcon = c.icon;
+                    return (
+                      <div key={c.id} className="flex items-start justify-between gap-2 text-sm">
+                        <div className="flex items-start gap-2 min-w-0">
+                          <CIcon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="font-medium leading-tight">{c.title}</div>
+                            <div className="text-[11px] text-muted-foreground line-clamp-2">{c.description}</div>
+                          </div>
+                        </div>
+                        <span className="font-medium tabular-nums shrink-0 whitespace-nowrap">
+                          {formatEuro(c.price)}<span className="text-[11px] text-muted-foreground">/mese</span>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <Separator />
+                <div className="flex items-center justify-between text-sm font-semibold">
+                  <span>Totale mensile</span>
+                  <span className="tabular-nums whitespace-nowrap">
+                    {formatEuro(monthlyTotal)}<span className="text-[11px] font-normal text-muted-foreground">/mese</span>
+                  </span>
+                </div>
               </div>
 
               <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
@@ -339,6 +396,10 @@ function QuotazionePage() {
                 </div>
                 <p>Sviluppo, deploy, formazione team e 30gg di supporto post go-live.</p>
               </div>
+
+              <p className="text-[11px] text-muted-foreground text-center italic">
+                Tutti i prezzi indicati sono IVA esclusa
+              </p>
 
               <Button
                 className="w-full"
