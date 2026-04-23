@@ -383,14 +383,26 @@ export const REPORTS: Report[] = [
   { id: "R5", number: "RAP-2025-200", type: "installazione", customer: "Banca Sella", jobCode: "COM-2025-085", date: "22/04/2025", technician: "Lorenzo Pini", hours: 20, notes: "Installazione filiali 1-3 di 18. Conformità OK.", status: "in_lavorazione" },
 ];
 
+export type InvoiceStatus = "emessa" | "da_emettere";
+export type PaymentStatus = "pagato" | "in_attesa" | "non_emesso";
+
+export interface InvoiceLine {
+  amount: number;
+  date: string;
+  paymentStatus: PaymentStatus;
+  invoiceStatus: InvoiceStatus;
+  invoiceNumber: string | null;
+  invoiceDate: string | null;
+}
+
 export interface CompletedWork {
   id: string;
   jobCode: string;
   customer: string;
   description: string;
   total: number;
-  acconto: { amount: number; date: string; status: "pagato" | "in_attesa" };
-  saldo: { amount: number; date: string; status: "pagato" | "in_attesa" | "non_emesso" };
+  acconto: InvoiceLine;
+  saldo: InvoiceLine;
   paymentTerms: string;
   closedDate: string;
 }
@@ -402,8 +414,22 @@ export const COMPLETED_WORKS: CompletedWork[] = [
     customer: "Eni Stazioni",
     description: "Restyling tabelle 4 stazioni",
     total: 28000,
-    acconto: { amount: 8400, date: "10/03/2025", status: "pagato" },
-    saldo: { amount: 19600, date: "30/04/2025", status: "in_attesa" },
+    acconto: {
+      amount: 8400,
+      date: "10/03/2025",
+      paymentStatus: "pagato",
+      invoiceStatus: "emessa",
+      invoiceNumber: "FT-2025-0042",
+      invoiceDate: "05/03/2025",
+    },
+    saldo: {
+      amount: 19600,
+      date: "30/04/2025",
+      paymentStatus: "in_attesa",
+      invoiceStatus: "emessa",
+      invoiceNumber: "FT-2025-0118",
+      invoiceDate: "22/04/2025",
+    },
     paymentTerms: "30% acconto, 70% saldo a 30gg",
     closedDate: "21/04/2025",
   },
@@ -413,8 +439,22 @@ export const COMPLETED_WORKS: CompletedWork[] = [
     customer: "Mediaworld",
     description: "Insegne 4 store Triveneto",
     total: 56500,
-    acconto: { amount: 16950, date: "01/02/2025", status: "pagato" },
-    saldo: { amount: 39550, date: "15/04/2025", status: "pagato" },
+    acconto: {
+      amount: 16950,
+      date: "01/02/2025",
+      paymentStatus: "pagato",
+      invoiceStatus: "emessa",
+      invoiceNumber: "FT-2025-0019",
+      invoiceDate: "28/01/2025",
+    },
+    saldo: {
+      amount: 39550,
+      date: "15/04/2025",
+      paymentStatus: "pagato",
+      invoiceStatus: "emessa",
+      invoiceNumber: "FT-2025-0102",
+      invoiceDate: "11/04/2025",
+    },
     paymentTerms: "30% acconto, 70% saldo a 60gg",
     closedDate: "10/04/2025",
   },
@@ -424,8 +464,22 @@ export const COMPLETED_WORKS: CompletedWork[] = [
     customer: "Hera Comm",
     description: "Totem indoor 12 sportelli",
     total: 19800,
-    acconto: { amount: 9900, date: "20/02/2025", status: "pagato" },
-    saldo: { amount: 9900, date: "20/04/2025", status: "in_attesa" },
+    acconto: {
+      amount: 9900,
+      date: "20/02/2025",
+      paymentStatus: "pagato",
+      invoiceStatus: "emessa",
+      invoiceNumber: "FT-2025-0031",
+      invoiceDate: "15/02/2025",
+    },
+    saldo: {
+      amount: 9900,
+      date: "20/04/2025",
+      paymentStatus: "in_attesa",
+      invoiceStatus: "da_emettere",
+      invoiceNumber: null,
+      invoiceDate: null,
+    },
     paymentTerms: "50% acconto, 50% saldo a 30gg",
     closedDate: "15/04/2025",
   },
@@ -435,12 +489,35 @@ export const COMPLETED_WORKS: CompletedWork[] = [
     customer: "ATM Milano",
     description: "Display fermate sperimentali",
     total: 42000,
-    acconto: { amount: 12600, date: "15/01/2025", status: "pagato" },
-    saldo: { amount: 29400, date: "—", status: "non_emesso" },
+    acconto: {
+      amount: 12600,
+      date: "15/01/2025",
+      paymentStatus: "pagato",
+      invoiceStatus: "emessa",
+      invoiceNumber: "FT-2025-0008",
+      invoiceDate: "10/01/2025",
+    },
+    saldo: {
+      amount: 29400,
+      date: "—",
+      paymentStatus: "non_emesso",
+      invoiceStatus: "da_emettere",
+      invoiceNumber: null,
+      invoiceDate: null,
+    },
     paymentTerms: "30% acconto, 70% saldo dopo collaudo finale",
     closedDate: "08/04/2025",
   },
 ];
+
+export type BillingStatus = "fatturato" | "parziale" | "da_fatturare";
+export const getBillingStatus = (w: CompletedWork): BillingStatus => {
+  const a = w.acconto.invoiceStatus === "emessa";
+  const s = w.saldo.invoiceStatus === "emessa";
+  if (a && s) return "fatturato";
+  if (a || s) return "parziale";
+  return "da_fatturare";
+};
 
 // Sales KPI per commerciale
 export interface SalesKpi {
