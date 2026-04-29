@@ -5,14 +5,11 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import netlify from "@netlify/vite-plugin-tanstack-start";
 
-export default defineConfig(({ mode }) => ({
-  plugins:
-    mode === "netlify"
-      ? [
-          // Loaded only for Netlify builds to keep Lovable preview/build unchanged.
-          (await import("@netlify/vite-plugin-tanstack-start")).default(),
-        ]
-      : [],
-  cloudflare: mode === "netlify" ? false : undefined,
-}));
+const isNetlifyBuild = process.env.NETLIFY === "true";
+
+export default defineConfig({
+  plugins: isNetlifyBuild ? [netlify()] : [],
+  cloudflare: isNetlifyBuild ? false : undefined,
+});
