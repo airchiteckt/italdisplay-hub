@@ -6,4 +6,13 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig();
+export default defineConfig(({ mode }) => ({
+  plugins:
+    mode === "netlify"
+      ? [
+          // Loaded only for Netlify builds to keep Lovable preview/build unchanged.
+          (await import("@netlify/vite-plugin-tanstack-start")).default(),
+        ]
+      : [],
+  cloudflare: mode === "netlify" ? false : undefined,
+}));
