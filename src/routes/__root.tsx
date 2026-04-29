@@ -38,10 +38,42 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Italdisplay ERP" },
-      { name: "description", content: "ERP Italdisplay - CRM, Offerte, Commesse e Lavorazione" },
+      { title: "Italdisplay ERP — CRM, Commesse e App 4.0" },
+      {
+        name: "description",
+        content:
+          "Italdisplay ERP: CRM, offerte, commesse, lavorazione e App 4.0 per operatori. Una piattaforma unica per gestire vendita e produzione.",
+      },
+      { name: "theme-color", content: "#c2410c" },
+      // Open Graph
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Italdisplay ERP" },
+      { property: "og:title", content: "Italdisplay ERP — CRM, Commesse e App 4.0" },
+      {
+        property: "og:description",
+        content:
+          "Piattaforma ERP per CRM, offerte, commesse, lavorazione e App 4.0 operatori.",
+      },
+      { property: "og:image", content: "/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      // Twitter
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Italdisplay ERP — CRM, Commesse e App 4.0" },
+      {
+        name: "twitter:description",
+        content:
+          "Piattaforma ERP per CRM, offerte, commesse, lavorazione e App 4.0 operatori.",
+      },
+      { name: "twitter:image", content: "/og-image.jpg" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
