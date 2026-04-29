@@ -18,6 +18,7 @@ const DEMO_USERS: (AuthUser & { password: string })[] = [
 ];
 
 interface AuthCtx {
+  isHydrated: boolean;
   user: AuthUser | null;
   login: (email: string, password: string) => Promise<AuthUser>;
   logout: () => void;
@@ -30,15 +31,19 @@ const AuthContext = React.createContext<AuthCtx | null>(null);
 const STORAGE_KEY = "italdisplay_user";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<AuthUser | null>(() => {
-    if (typeof window === "undefined") return null;
+  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [isHydrated, setIsHydrated] = React.useState(false);
+
+  React.useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as AuthUser) : null;
+      setUser(raw ? (JSON.parse(raw) as AuthUser) : null);
     } catch {
-      return null;
+      setUser(null);
+    } finally {
+      setIsHydrated(true);
     }
-  });
+  }, []);
 
   const persist = (u: AuthUser | null) => {
     setUser(u);
@@ -70,13 +75,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = React.useMemo(
     () => ({
+      isHydrated,
       user,
       login,
       logout,
       switchUser,
       users: DEMO_USERS.map(({ password: _p, ...rest }) => rest),
     }),
-    [user],
+    [isHydrated, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
