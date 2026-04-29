@@ -54,12 +54,16 @@ const NAV = [
 ] as const;
 
 export function AppLayout() {
-  const { user, logout, users, switchUser } = useAuth();
+  const { user, logout, users, switchUser, isHydrated } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
+  if (!isHydrated) {
+    return null;
+  }
+
   if (!user) {
-    if (typeof window !== "undefined" && !location.pathname.startsWith("/login")) {
+    if (!location.pathname.startsWith("/login")) {
       navigate({ to: "/login" });
     }
     return null;
