@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   BarChart3,
@@ -58,14 +59,17 @@ export function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    if (isHydrated && !user && !location.pathname.startsWith("/login")) {
+      navigate({ to: "/login" });
+    }
+  }, [isHydrated, user, location.pathname, navigate]);
+
   if (!isHydrated) {
     return null;
   }
 
   if (!user) {
-    if (!location.pathname.startsWith("/login")) {
-      navigate({ to: "/login" });
-    }
     return null;
   }
 
